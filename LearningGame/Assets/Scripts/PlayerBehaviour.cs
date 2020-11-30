@@ -4,36 +4,38 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    private GameObject player;
-    private Rigidbody playerRigidBody;
+    private GameObject m_player;
+    private Rigidbody m_playerRigidBody;
 
-    public int velocity = 1;
+    public int m_velocity = 1;
+    public Joystick m_joystick;
     
     void Start()
     {
-        player = this.gameObject;
-        playerRigidBody = player.GetComponent<Rigidbody>();
+        m_player = this.gameObject;
+        m_playerRigidBody = m_player.GetComponent<Rigidbody>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         Vector3 direction = new Vector3(0, 0, 0);
-        if (Input.GetKey("up"))
+        if (m_joystick.Horizontal > 0)
         {
-            direction += new Vector3(0,0,1);
+            direction += new Vector3(1, 0, 0);
         }
-        if (Input.GetKey("down"))
+        else if (m_joystick.Horizontal < 0)
         {
-            direction += new Vector3(0,0,-1);
+            direction += new Vector3(-1, 0, 0);
         }
-        if (Input.GetKey("right"))
+
+        if (m_joystick.Vertical > 0)
         {
-            direction += new Vector3(1,0,0);
+            direction += new Vector3(0, 0, 1);
         }
-        if (Input.GetKey("left"))
+        else if (m_joystick.Vertical < 0)
         {
-            direction += new Vector3(-1,0,0);
+            direction += new Vector3(0, 0, -1);
         }
-        playerRigidBody.velocity = direction * velocity;
+        m_playerRigidBody.velocity = direction * m_velocity;
     }
 }
