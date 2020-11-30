@@ -7,12 +7,10 @@ public class PlayerBehaviour : MonoBehaviour
 {
     private GameObject m_player;
     private Rigidbody m_playerRigidBody;
-    private bool m_jump;
-    private float m_jumpTime;
 
     public int m_velocity = 1;
-    public int m_jumpVelocity = 1;
-    public float m_jumpDuration = 1.0f;
+    public int m_jumpVelocity = 10;
+    public float m_distanceToFloor = 1f;
     public Joystick m_joystick;
     public Button m_jumpButton;
     
@@ -23,45 +21,67 @@ public class PlayerBehaviour : MonoBehaviour
         m_jumpButton.onClick.AddListener(OnJumpButtonClicked);
     }
 
+    bool IsOnFloor()
+    {
+        return Physics.Raycast(m_player.transform.position, new Vector3(0, -1, 0), m_distanceToFloor);
+    }
+
+    Vector3 GetVelocity()
+    {
+        Vector3 velocity = m_playerRigidBody.velocity;
+        velocity.x = m_joystick.Horizontal * m_velocity;
+        velocity.z = m_joystick.Vertical * m_velocity;
+        return velocity;
+    }
+
     void OnJumpButtonClicked()
     {
-        if (Mathf.Abs(m_playerRigidBody.velocity.y) < 0.2 && !m_jump)
+        if (IsOnFloor())
         {
-            m_jump = true;
+            Vector3 direction = m_playerRigidBody.velocity;
+            direction.y = m_jumpVelocity;
+            m_playerRigidBody.velocity = direction;
         }
     }
 
     void FixedUpdate()
     {
-        Vector3 direction = new Vector3(0.0f, 0.0f, 0.0f);
-        if (m_jump)
+        m_playerRigidBody.velocity = GetVelocity();
+
+        #if UNITY_EDITOR
+            DebugUpdate();
+        #endif
+    }
+
+
+#if UNITY_EDITOR
+    void DebugUpdate(){
+        if (Input.GetKey("space"))
         {
-            m_jumpTime += Time.deltaTime;
-            if (m_jumpTime > m_jumpDuration)
-            {
-                m_jumpTime = 0.0f;
-                m_jump = false;
-            }
-            int jumpDirection = m_jumpTime < m_jumpDuration / 2 ? 1 : -1;
-            direction.y = jumpDirection * m_jumpVelocity;
-        }
-        if (m_joystick.Horizontal > 0)
-        {
-            direction += new Vector3(1, 0, 0) * m_velocity;
-        }
-        else if (m_joystick.Horizontal < 0)
-        {
-            direction += new Vector3(-1, 0, 0) * m_velocity;
+            OnJumpButtonClicked();
         }
 
-        if (m_joystick.Vertical > 0)
+        Vector3 direction = new Vector3(0, 0, 0);
+        if (Input.GetKey("up"))
         {
-            direction += new Vector3(0, 0, 1) * m_velocity;
+            direction += new Vector3(0,0,1);
         }
-        else if (m_joystick.Vertical < 0)
+        if (Input.GetKey("down"))
         {
-            direction += new Vector3(0, 0, -1) * m_velocity;
+            direction += new Vector3(0,0,-1);
         }
-        m_playerRigidBody.velocity = direction;
+        if (Input.GetKey("right"))
+        {
+            direction += new Vector3(1,0,0);
+        }
+        if (Input.GetKey("left"))
+        {
+            direction += new Vector3(-1,0,0);
+        }
+
+        m_playerRigidBody.velocity += direction.normalized * m_velocity;
     }
+#endif
+
+
 }
