@@ -11,10 +11,10 @@ public class PlayerBehaviour : MonoBehaviour
     public int m_velocity = 1;
     public int m_jumpVelocity = 10;
     public float m_distanceToFloor = 1f;
-    public float m_yAngleVelocity = 100;
+    public float m_yCameraRotationVelocity = 100;
     public Joystick m_joystick;
     public Button m_jumpButton;
-    public float onlyRotateTolerance = -3;
+    public float onlyRotateTolerance = -0.3f;
     
     void Start()
     {
@@ -30,19 +30,19 @@ public class PlayerBehaviour : MonoBehaviour
 
     Vector3 GetVelocity()
     {
-        float joystickModule = 0;
-        if(m_joystick.Direction.normalized.y > onlyRotateTolerance)
-        {
-            joystickModule = m_joystick.Direction.magnitude;
-        }
+        float joystickModule = m_joystick.Direction.magnitude;
+        
+        float JoistickAngle = -Vector2.SignedAngle(new Vector2(0, 1), m_joystick.Direction);
+        Quaternion joisticRotation = Quaternion.Euler(new Vector3(0, JoistickAngle, 0));
+
         Vector3 velocity = transform.forward * joystickModule * m_velocity;
         velocity.y = m_playerRigidBody.velocity.y;
-        return velocity;
+        return joisticRotation * velocity;
     }
 
     Quaternion GetRotation()
     {
-        Vector3 m_EulerAngleVelocity = new Vector3(0, m_yAngleVelocity, 0);
+        Vector3 m_EulerAngleVelocity = new Vector3(0, m_yCameraRotationVelocity, 0);
         m_EulerAngleVelocity *= m_joystick.Direction.normalized.x;
         Quaternion deltaRotation = Quaternion.Euler(m_EulerAngleVelocity * Time.deltaTime);
         return m_playerRigidBody.rotation * deltaRotation;
