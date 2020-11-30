@@ -15,6 +15,11 @@ public class GoalObjetBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        goalObject.transform.Rotate(new Vector3(0,1,0), Space.World);
+        goalObject.transform.Rotate(new Vector3(0, 1, 0), Space.World);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Destroy(this.transform.parent.gameObject);
     }
 }
