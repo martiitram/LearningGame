@@ -11,6 +11,7 @@ public class PlayerBehaviour : MonoBehaviour
     public int m_velocity = 1;
     public int m_jumpVelocity = 10;
     public float m_distanceToFloor = 1f;
+    public float m_yAngleVelocity = 100;
     public Joystick m_joystick;
     public Button m_jumpButton;
     
@@ -28,10 +29,17 @@ public class PlayerBehaviour : MonoBehaviour
 
     Vector3 GetVelocity()
     {
-        Vector3 velocity = m_playerRigidBody.velocity;
-        velocity.x = m_joystick.Horizontal * m_velocity;
-        velocity.z = m_joystick.Vertical * m_velocity;
+        Vector3 velocity = transform.forward * m_joystick.Vertical * m_velocity;
+        velocity.y = m_playerRigidBody.velocity.y;
         return velocity;
+    }
+
+    Quaternion GetRotation()
+    {
+        Vector3 m_EulerAngleVelocity = new Vector3(0, m_yAngleVelocity, 0);
+        m_EulerAngleVelocity *= m_joystick.Horizontal;
+        Quaternion deltaRotation = Quaternion.Euler(m_EulerAngleVelocity * Time.deltaTime);
+        return m_playerRigidBody.rotation * deltaRotation;
     }
 
     void OnJumpButtonClicked()
@@ -46,11 +54,13 @@ public class PlayerBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
-        m_playerRigidBody.velocity = GetVelocity();
-
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
             DebugUpdate();
-        #endif
+#endif
+        m_playerRigidBody.velocity = GetVelocity();
+        m_playerRigidBody.MoveRotation(GetRotation());
+
+        
     }
 
 
@@ -60,26 +70,6 @@ public class PlayerBehaviour : MonoBehaviour
         {
             OnJumpButtonClicked();
         }
-
-        Vector3 direction = new Vector3(0, 0, 0);
-        if (Input.GetKey("up"))
-        {
-            direction += new Vector3(0,0,1);
-        }
-        if (Input.GetKey("down"))
-        {
-            direction += new Vector3(0,0,-1);
-        }
-        if (Input.GetKey("right"))
-        {
-            direction += new Vector3(1,0,0);
-        }
-        if (Input.GetKey("left"))
-        {
-            direction += new Vector3(-1,0,0);
-        }
-
-        m_playerRigidBody.velocity += direction.normalized * m_velocity;
     }
 #endif
 
