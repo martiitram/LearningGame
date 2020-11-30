@@ -14,6 +14,7 @@ public class PlayerBehaviour : MonoBehaviour
     public float m_yAngleVelocity = 100;
     public Joystick m_joystick;
     public Button m_jumpButton;
+    public float onlyRotateTolerance = -3;
     
     void Start()
     {
@@ -29,7 +30,12 @@ public class PlayerBehaviour : MonoBehaviour
 
     Vector3 GetVelocity()
     {
-        Vector3 velocity = transform.forward * m_joystick.Vertical * m_velocity;
+        float joystickModule = 0;
+        if(m_joystick.Direction.normalized.y > onlyRotateTolerance)
+        {
+            joystickModule = m_joystick.Direction.magnitude;
+        }
+        Vector3 velocity = transform.forward * joystickModule * m_velocity;
         velocity.y = m_playerRigidBody.velocity.y;
         return velocity;
     }
@@ -37,7 +43,7 @@ public class PlayerBehaviour : MonoBehaviour
     Quaternion GetRotation()
     {
         Vector3 m_EulerAngleVelocity = new Vector3(0, m_yAngleVelocity, 0);
-        m_EulerAngleVelocity *= m_joystick.Horizontal;
+        m_EulerAngleVelocity *= m_joystick.Direction.normalized.x;
         Quaternion deltaRotation = Quaternion.Euler(m_EulerAngleVelocity * Time.deltaTime);
         return m_playerRigidBody.rotation * deltaRotation;
     }
