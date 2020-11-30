@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GoalObjetBehaviour : MonoBehaviour
+public class ObjectiveBehaviour : MonoBehaviour
 {
     private GameObject goalObject;
 
