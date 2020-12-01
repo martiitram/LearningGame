@@ -19,7 +19,7 @@ public class GameRoundUI : MonoBehaviour
 
     public void SetObjective()
     {
-        m_goalText.text = "0/" + m_gameRoundManager.GetAmountOfObjectives().ToString();
+        m_goalText.text = m_gameRoundManager.GetAmountOfCollectObjectives().ToString() + "/" + m_gameRoundManager.GetAmountOfObjectives().ToString();
     }
 
     void Update()

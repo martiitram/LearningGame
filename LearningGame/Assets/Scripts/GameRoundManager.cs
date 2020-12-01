@@ -5,9 +5,10 @@ using UnityEngine;
 public class GameRoundManager : MonoBehaviour
 {
     private int m_amoutOfObjectives;
+    private int m_amountOfCollectObjectives;
     private float m_currentTime;
     private GameObject[] m_goalSpawnPoints;
-    private GameObject m_uiGameObjectRoot;
+    private GameObject m_uiGameObjectRoot;    
 
     public GameObject m_goalsPrefab;
     public int m_timeInSeconds;
@@ -24,6 +25,8 @@ public class GameRoundManager : MonoBehaviour
             Instantiate(m_goalsPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
         }
 
+        m_amoutOfObjectives = 0;
+        m_amountOfCollectObjectives = 0;
         m_currentTime = 0;
     }
     
@@ -40,5 +43,19 @@ public class GameRoundManager : MonoBehaviour
     void Update()
     {
         m_currentTime += Time.deltaTime;
+    }
+    
+    public void OnObjectiveDestroyed()
+    {
+        ++m_amountOfCollectObjectives;
+        if (m_amountOfCollectObjectives == m_amoutOfObjectives)
+        {
+            //On Win
+        }
+    }
+
+    public int GetAmountOfCollectObjectives()
+    {
+        return m_amountOfCollectObjectives;
     }
 }
