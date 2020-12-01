@@ -6,6 +6,7 @@ TagManager:
   tags:
   - goalSpawnPoint
   - GameRoundManager
+  - Wall
   layers:
   - Default
   - TransparentFX
