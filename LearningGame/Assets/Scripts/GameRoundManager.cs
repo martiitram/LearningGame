@@ -15,6 +15,10 @@ public class GameRoundManager : MonoBehaviour
 
     void Awake()
     {
+        m_amoutOfObjectives = 0;
+        m_amountOfCollectObjectives = 0;
+        m_currentTime = 0;
+
         if (m_goalSpawnPoints == null)
             m_goalSpawnPoints = GameObject.FindGameObjectsWithTag("goalSpawnPoint");
 
@@ -24,10 +28,6 @@ public class GameRoundManager : MonoBehaviour
             Destroy(spawnPoint);
             Instantiate(m_goalsPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
         }
-
-        m_amoutOfObjectives = 0;
-        m_amountOfCollectObjectives = 0;
-        m_currentTime = 0;
     }
     
     public int GetAmountOfObjectives()

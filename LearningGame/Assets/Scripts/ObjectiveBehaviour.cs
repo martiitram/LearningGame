@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class ObjectiveBehaviour : MonoBehaviour
 {
-    private GameObject goalObject;
-
-    // Start is called before the first frame update
+    private GameObject m_objectiveGameObject;
+    private GameRoundManager m_gameRoundManager;
+    
     void Start()
     {
-        goalObject = this.gameObject;
+        m_objectiveGameObject = this.gameObject;
+        m_gameRoundManager = GameObject.FindGameObjectWithTag("GameRoundManager").GetComponent<GameRoundManager>();
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        goalObject.transform.Rotate(new Vector3(0, 1, 0), Space.World);
+        m_objectiveGameObject.transform.Rotate(new Vector3(0, 1, 0), Space.World);
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        m_gameRoundManager.OnObjectiveDestroyed();
         Destroy(this.transform.parent.gameObject);
     }
 }
