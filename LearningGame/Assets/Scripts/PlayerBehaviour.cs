@@ -14,8 +14,8 @@ public class PlayerBehaviour : MonoBehaviour
     public float m_yCameraRotationVelocity = 100;
     public Joystick m_joystick;
     public Button m_jumpButton;
-    public float onlyRotateTolerance = -0.3f;
-    
+    public float m_gravityConstant = 50;
+
     void Start()
     {
         m_player = this.gameObject;
@@ -36,7 +36,7 @@ public class PlayerBehaviour : MonoBehaviour
         Quaternion joisticRotation = Quaternion.Euler(new Vector3(0, JoistickAngle, 0));
 
         Vector3 velocity = transform.forward * joystickModule * m_velocity;
-        velocity.y = m_playerRigidBody.velocity.y;
+        velocity.y = m_playerRigidBody.velocity.y - m_gravityConstant * Time.deltaTime;
         return joisticRotation * velocity;
     }
 
