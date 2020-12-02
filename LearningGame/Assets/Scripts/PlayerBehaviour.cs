@@ -8,6 +8,7 @@ public class PlayerBehaviour : MonoBehaviour
     private GameObject m_player;
     private Rigidbody m_playerRigidBody;
 
+    public Camera m_playerCamera;
     public int m_velocity = 1;
     public int m_jumpVelocity = 10;
     public float m_distanceToFloor = 1f;
@@ -31,21 +32,38 @@ public class PlayerBehaviour : MonoBehaviour
     Vector3 GetVelocity()
     {
         float joystickModule = m_joystick.Direction.magnitude;
-        
-        float JoistickAngle = -Vector2.SignedAngle(new Vector2(0, 1), m_joystick.Direction);
-        Quaternion joisticRotation = Quaternion.Euler(new Vector3(0, JoistickAngle, 0));
-
-        Vector3 velocity = transform.forward * joystickModule * m_velocity;
+        Vector3 velocity = Vector3.forward * joystickModule * m_velocity;
         velocity.y = m_playerRigidBody.velocity.y - m_gravityConstant * Time.deltaTime;
-        return joisticRotation * velocity;
+        return GetRotation() * velocity;
     }
+
+    void UpdateVelocity()
+    {
+        m_playerRigidBody.velocity = GetVelocity();
+    }
+
 
     Quaternion GetRotation()
     {
-        Vector3 m_EulerAngleVelocity = new Vector3(0, m_yCameraRotationVelocity, 0);
-        m_EulerAngleVelocity *= m_joystick.Direction.normalized.x;
-        Quaternion deltaRotation = Quaternion.Euler(m_EulerAngleVelocity * Time.deltaTime);
-        return m_playerRigidBody.rotation * deltaRotation;
+        float JoistickAngle = Vector2.SignedAngle( m_joystick.Direction, new Vector2(0, 1));
+        Quaternion joisticRotation = Quaternion.Euler(new Vector3(0, JoistickAngle, 0));
+        return getCameraRotationXZ() * joisticRotation;
+    }
+
+    void UpdateRotation()
+    {
+        if(m_joystick.Direction.magnitude > 0)
+        {
+            m_playerRigidBody.rotation = GetRotation();
+        }
+    }
+
+    Quaternion getCameraRotationXZ()
+    {
+        Vector3 cameraDirection = m_playerCamera.transform.forward;
+        float cameraAngle = Vector2.SignedAngle(new Vector2(cameraDirection.x, cameraDirection.z), new Vector2(0, 1));
+        Quaternion cameraRotation = Quaternion.Euler(new Vector3(0, cameraAngle, 0));
+        return cameraRotation;
     }
 
     void OnJumpButtonClicked()
@@ -63,10 +81,8 @@ public class PlayerBehaviour : MonoBehaviour
 #if UNITY_EDITOR
             DebugUpdate();
 #endif
-        m_playerRigidBody.velocity = GetVelocity();
-        m_playerRigidBody.MoveRotation(GetRotation());
-
-        
+        UpdateVelocity();
+        UpdateRotation();        
     }
 
 
